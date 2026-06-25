@@ -55,7 +55,7 @@ const program = new Command();
 program
   .name('chandao4')
   .description('禅道命令行工具 - Bug、任务、项目和产品管理')
-  .version('1.0.0')
+  .version('0.1.0')
   .option('--json', '以 JSON 格式输出')
   .option('--debug', '打印详细的请求和响应信息');
 
