@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+debug-*.ts
+quick-test*.ts
+test-*.ts
+.claude/
