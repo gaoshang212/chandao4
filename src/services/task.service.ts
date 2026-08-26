@@ -37,7 +37,7 @@ export class TaskService {
     const tasks: Task[] = [];
     if (data.tasks) {
       for (const [id, t] of Object.entries(data.tasks)) {
-        tasks.push(this.mapTask({ ...(t as any), id }));
+        tasks.push(this.mapTask({ ...(t as any), id }, projectId));
       }
     }
     tasks.sort((a, b) => b.id - a.id);
@@ -64,10 +64,11 @@ export class TaskService {
     return task;
   }
 
-  private mapTask(t: any): Task {
+  private mapTask(t: any, fallbackProjectId = 0): Task {
     return {
       id: parseInt(t.id, 10),
       name: t.name || '',
+      project: parseInt(t.project, 10) || fallbackProjectId,
       execution: parseInt(t.project, 10) || 0,
       module: parseInt(t.module, 10) || 0,
       type: t.type || '',

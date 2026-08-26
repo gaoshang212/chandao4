@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-26
+
+### Added
+
+- `bug list/show` 和 `task list/show` 的 JSON 输出新增 `project` 项目编号。
+- 按项目查询 Bug 或任务时，接口未返回项目编号则使用查询条件兜底。
+
 ## [0.2.1] - 2026-08-26
 
 ### Added
@@ -36,7 +43,8 @@
 - 支持禅道企业版 4.1.3+，通过 Session Cookie 认证，无需管理员后台权限
 - GitHub Actions 自动发布到 npm（基于 Trusted Publishing / OIDC）
 
-[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/gaoshang212/chandao4/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/gaoshang212/chandao4/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/gaoshang212/chandao4/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/gaoshang212/chandao4/releases/tag/v0.1.0

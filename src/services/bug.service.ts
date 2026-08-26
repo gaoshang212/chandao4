@@ -73,10 +73,10 @@ export class BugService {
     const bugs: Bug[] = [];
 
     if (Array.isArray(rawBugs)) {
-      for (const b of rawBugs) bugs.push(this.mapBug(b));
+      for (const b of rawBugs) bugs.push(this.mapBug(b, projectId));
     } else if (typeof rawBugs === 'object') {
       for (const [id, b] of Object.entries(rawBugs)) {
-        if (b && typeof b === 'object') bugs.push(this.mapBug({ ...(b as any), id }));
+        if (b && typeof b === 'object') bugs.push(this.mapBug({ ...(b as any), id }, projectId));
       }
     }
     bugs.sort((a, b) => b.id - a.id);
@@ -120,11 +120,12 @@ export class BugService {
     return bug;
   }
 
-  private mapBug(b: any): Bug {
+  private mapBug(b: any, fallbackProjectId = 0): Bug {
     return {
       id: parseInt(b.id, 10),
       title: b.title || '',
       product: parseInt(b.product, 10) || 0,
+      project: parseInt(b.project, 10) || fallbackProjectId,
       module: parseInt(b.module, 10) || 0,
       severity: parseInt(b.severity, 10) || 3,
       priority: parseInt(b.pri, 10) || 3,

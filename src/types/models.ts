@@ -19,6 +19,7 @@ export interface Bug {
   id: number;
   title: string;
   product: number;
+  project: number;
   module: number;
   severity: number;      // 1-4
   priority: number;      // 1-4
@@ -41,6 +42,7 @@ export interface Bug {
 export interface Task {
   id: number;
   name: string;
+  project: number;
   execution: number;
   module: number;
   type: string;
