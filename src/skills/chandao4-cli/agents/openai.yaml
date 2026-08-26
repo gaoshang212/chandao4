@@ -1,0 +1,4 @@
+interface:
+  display_name: "chandao4 CLI"
+  short_description: "通过 chandao4 查询、筛选并安全管理禅道数据"
+  default_prompt: "使用 $chandao4-cli 查询我的待处理 Bug。"

@@ -6,6 +6,17 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-26
+
+### Added
+
+- 新增 `chandao4 install skills`，将 npm 包内置的 Codex skills 安装到用户目录，并支持基于 npm 包版本自动升级。
+- npm 发布包新增 `src/skills` 资源，确保全局安装后可直接安装配套 skill。
+
+### Changed
+
+- npm 发布工作流升级到 Node.js 24。
+
 ## [0.2.0] - 2026-08-26
 
 ### Added
@@ -25,6 +36,7 @@
 - 支持禅道企业版 4.1.3+，通过 Session Cookie 认证，无需管理员后台权限
 - GitHub Actions 自动发布到 npm（基于 Trusted Publishing / OIDC）
 
-[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/gaoshang212/chandao4/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/gaoshang212/chandao4/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/gaoshang212/chandao4/releases/tag/v0.1.0

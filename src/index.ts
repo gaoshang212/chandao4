@@ -19,6 +19,7 @@ import { createProductCommand } from './commands/product';
 import { createProjectCommand } from './commands/project';
 import { createConfigCommand } from './commands/config';
 import { createLoginCommand, createLogoutCommand } from './commands/login';
+import { createInstallCommand } from './commands/install';
 import { formatProductTable, formatProjectTable } from './utils/format';
 
 // 加载 .env 文件
@@ -120,6 +121,7 @@ program.command('status')
 program.addCommand(createLoginCommand());
 program.addCommand(createLogoutCommand());
 program.addCommand(createConfigCommand());
+program.addCommand(createInstallCommand());
 // 需要网络访问的命令通过 getter 懒加载
 program.addCommand(createProjectCommand(
   new Proxy({} as ProjectService, { get(_, p) { return (getServices().projectService as any)[p]; } }),

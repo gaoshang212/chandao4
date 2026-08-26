@@ -10,6 +10,17 @@
 npm install -g chandao4
 ```
 
+安装随 npm 包发布的 Codex skills：
+
+```bash
+chandao4 install skills
+
+# 同版本重装、强制降级或覆盖无版本标记的旧安装
+chandao4 install skills --force
+```
+
+默认安装到 `~/.codex/skills`；设置 `CODEX_HOME` 后安装到 `$CODEX_HOME/skills`。安装器使用 npm 包版本管理 skill：较旧版本会自动升级，相同或更高版本会跳过。旧安装没有版本标记时需执行一次 `--force`。
+
 或本地开发：
 
 ```bash
