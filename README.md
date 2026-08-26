@@ -70,6 +70,7 @@ chandao4 logout
 # 列出项目
 chandao4 project list
 chandao4 project list --limit 10 --page 1
+chandao4 project list --product 2001
 
 # 查看项目详情
 chandao4 project show 1001
@@ -85,8 +86,10 @@ chandao4 bug my --limit 10 --page 1
 # 列出 Bug
 chandao4 bug list --product 2001
 chandao4 bug list --product 2001 --status active --limit 10
+chandao4 bug list --project 1001
+chandao4 bug list --project 1001 --limit 10 --page 1
 
-# 查看 Bug 详情
+# 查看 Bug 详情（含附件/图片下载地址）
 chandao4 bug show 4001
 
 # 创建 Bug
@@ -112,7 +115,7 @@ chandao4 task my --limit 10 --page 1
 chandao4 task list -p 1001
 chandao4 task list -p 1001 --status doing --limit 10
 
-# 查看任务详情
+# 查看任务详情（含附件/图片下载地址）
 chandao4 task show 3001
 
 # 创建任务
@@ -143,6 +146,10 @@ chandao4 product list --limit 10 --page 2
 chandao4 project list --json | jq '.[] | {id, name}'
 chandao4 task list -p 1001 --json | jq '.[] | {id, name, status}'
 chandao4 bug my --json
+
+# 仅取附件下载地址（图片或文件）
+chandao4 bug show 4001 --json | jq '.files[] | {title, isImage, downloadUrl}'
+chandao4 task show 3001 --json | jq '.files[].downloadUrl'
 ```
 
 ### 配置管理

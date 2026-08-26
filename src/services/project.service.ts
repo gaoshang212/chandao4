@@ -18,11 +18,29 @@ export class ProjectService {
     this.client = client;
   }
 
-  async getList(): Promise<{ projects: Project[]; total: number }> {
-    const data = await this.client.getJson('/project-all.json');
+  async getList(productId?: number): Promise<{ projects: Project[]; total: number }> {
+    const data = productId
+      ? await this.client.getJson(`/product-project-all-${productId}-0.json`)
+      : await this.client.getJson('/project-all.json');
     const projects: Project[] = [];
 
-    if (data.projects) {
+    if (productId && data.projectStats) {
+      const projectStats = Array.isArray(data.projectStats)
+        ? data.projectStats
+        : Object.values(data.projectStats);
+
+      for (const project of projectStats) {
+        const p = project as Record<string, unknown>;
+        projects.push({
+          id: parseInt(String(p.id), 10),
+          name: String(p.name || ''),
+          code: String(p.code || ''),
+          status: String(p.status || ''),
+          begin: String(p.begin || ''),
+          end: String(p.end || ''),
+        });
+      }
+    } else if (data.projects) {
       for (const [id, name] of Object.entries(data.projects)) {
         projects.push({ id: parseInt(id, 10), name: name as string, code: '', status: '', begin: '', end: '' });
       }

@@ -2,6 +2,7 @@
 
 import { ApiClient } from '../core/api-client';
 import { Bug } from '../types/models';
+import { parseAttachments, extractInlineAttachments, mergeAttachments } from '../utils/attachment';
 
 export class BugService {
   private client: ApiClient;
@@ -62,6 +63,28 @@ export class BugService {
     return { bugs, total };
   }
 
+  /** 获取项目关联的 Bug 列表 */
+  async getListByProject(projectId: number, options?: {
+    limit?: number;
+    page?: number;
+  }): Promise<{ bugs: Bug[]; total: number }> {
+    const data = await this.client.getJson(this.projectBugPath(projectId, options));
+    const rawBugs = data.bugs || [];
+    const bugs: Bug[] = [];
+
+    if (Array.isArray(rawBugs)) {
+      for (const b of rawBugs) bugs.push(this.mapBug(b));
+    } else if (typeof rawBugs === 'object') {
+      for (const [id, b] of Object.entries(rawBugs)) {
+        if (b && typeof b === 'object') bugs.push(this.mapBug({ ...(b as any), id }));
+      }
+    }
+    bugs.sort((a, b) => b.id - a.id);
+
+    const pagerTotal = parseInt(String(data.pager?.recTotal ?? ''), 10);
+    return { bugs, total: Number.isNaN(pagerTotal) ? bugs.length : pagerTotal };
+  }
+
   // 禅道 PATH_INFO 路由：要传 recPerPage 必须把前面参数段都补齐。query string 不被识别。
   private myBugPath(opts?: { limit?: number; page?: number }): string {
     if (!opts?.limit || opts.limit <= 0) return '/my-bug.json';
@@ -77,11 +100,24 @@ export class BugService {
     return `/bug-browse-${productId}-0-all-0-id_desc-0-${opts.limit}-${page}.json`;
   }
 
+  private projectBugPath(projectId: number, opts?: { limit?: number; page?: number }): string {
+    if (!opts?.limit || opts.limit <= 0) return `/project-bug-${projectId}.json`;
+    const page = opts.page && opts.page > 0 ? opts.page : 1;
+    // project-bug-{projectID}-{orderBy}-{build}-{type}-{param}-{recTotal}-{recPerPage}-{pageID}
+    return `/project-bug-${projectId}-status,id_desc-0-all-0-0-${opts.limit}-${page}.json`;
+  }
+
   /** 获取 Bug 详情 */
   async getDetail(bugId: number): Promise<Bug | null> {
     const data = await this.client.getJson(`/bug-view-${bugId}.json`);
     if (!data.bug) return null;
-    return this.mapBug(data.bug);
+    const bug = this.mapBug(data.bug);
+    const baseUrl = this.client.getBaseUrl();
+    const primary = parseAttachments(data.files ?? data.bug.files, baseUrl);
+    const inline = extractInlineAttachments(String(data.bug.steps || ''), baseUrl);
+    const files = mergeAttachments(primary, inline);
+    if (files.length) bug.files = files;
+    return bug;
   }
 
   private mapBug(b: any): Bug {

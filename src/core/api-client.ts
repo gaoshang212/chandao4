@@ -19,6 +19,10 @@ export class ApiClient {
     this.debug = enabled;
   }
 
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   private logRequest(method: string, url: string, body?: Record<string, string>): void {
     if (!this.debug) return;
     console.error(chalk.gray(`\n── DEBUG ──────────────────────────────`));

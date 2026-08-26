@@ -44,12 +44,27 @@ export function createBugCommand(bugService: BugService, getUseJson: () => boole
   bug.command('list')
     .description('列出 Bug')
     .option('-p, --product <id>', '产品 ID', (v) => parseInt(v, 10))
+    .option('--project <id>', '项目 ID', (v) => parseInt(v, 10))
     .option('-s, --status <status>', '状态过滤 (active|resolved|closed)')
     .option('-l, --limit <n>', '显示条数', (v) => parseInt(v, 10), 20)
     .option('--page <n>', '页码', (v) => parseInt(v, 10), 1)
     .action(async (options) => {
-      if (!options.product) {
-        console.error(chalk.red('错误: 需要指定 --product <id>'));
+      const hasProduct = options.product !== undefined;
+      const hasProject = options.project !== undefined;
+
+      if (!hasProduct && !hasProject) {
+        console.error(chalk.red('错误: 需要指定 --product <id> 或 --project <id>'));
+        process.exit(1);
+      }
+
+      if (hasProduct && hasProject) {
+        console.error(chalk.red('错误: --product 和 --project 只能指定一个'));
+        process.exit(1);
+      }
+
+      const scopeId = hasProject ? options.project : options.product;
+      if (!isValidId(scopeId)) {
+        console.error(chalk.red(`错误: 无效的${hasProject ? '项目' : '产品'} ID`));
         process.exit(1);
       }
 
@@ -58,12 +73,22 @@ export function createBugCommand(bugService: BugService, getUseJson: () => boole
         process.exit(1);
       }
 
+      if (hasProject && options.status) {
+        console.error(chalk.red('错误: 按项目查询暂不支持 --status'));
+        process.exit(1);
+      }
+
       try {
-        const { bugs, total } = await bugService.getList(options.product, {
-          status: options.status,
-          limit: options.limit,
-          page: options.page,
-        });
+        const { bugs, total } = hasProject
+          ? await bugService.getListByProject(scopeId, {
+              limit: options.limit,
+              page: options.page,
+            })
+          : await bugService.getList(scopeId, {
+              status: options.status,
+              limit: options.limit,
+              page: options.page,
+            });
 
         if (bugs.length === 0) {
           console.log(chalk.gray('没有找到 Bug'));

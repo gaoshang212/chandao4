@@ -2,6 +2,7 @@
 
 import { ApiClient } from '../core/api-client';
 import { Task } from '../types/models';
+import { parseAttachments, extractInlineAttachments, mergeAttachments } from '../utils/attachment';
 
 export class TaskService {
   private client: ApiClient;
@@ -54,7 +55,13 @@ export class TaskService {
   async getDetail(taskId: number): Promise<Task | null> {
     const data = await this.client.getJson(`/task-view-${taskId}.json`);
     if (!data.task) return null;
-    return this.mapTask(data.task);
+    const task = this.mapTask(data.task);
+    const baseUrl = this.client.getBaseUrl();
+    const primary = parseAttachments(data.files ?? data.task.files, baseUrl);
+    const inline = extractInlineAttachments(String(data.task.desc || ''), baseUrl);
+    const files = mergeAttachments(primary, inline);
+    if (files.length) task.files = files;
+    return task;
   }
 
   private mapTask(t: any): Task {

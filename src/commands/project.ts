@@ -10,12 +10,18 @@ export function createProjectCommand(projectService: ProjectService, getUseJson:
     .description('项目管理');
 
   project.command('list')
-    .description('列出所有项目')
+    .description('列出项目，可按产品筛选')
+    .option('-p, --product <id>', '产品 ID', (v) => parseInt(v, 10))
     .option('-l, --limit <n>', '每页条数（客户端分页）', (v) => parseInt(v, 10), 0)
     .option('--page <n>', '页码', (v) => parseInt(v, 10), 1)
     .action(async (options) => {
+      if (options.product !== undefined && (!Number.isInteger(options.product) || options.product <= 0)) {
+        console.error(chalk.red('错误: 无效的产品 ID'));
+        process.exit(1);
+      }
+
       try {
-        const { projects, total } = await projectService.getList();
+        const { projects, total } = await projectService.getList(options.product);
         const limit = options.limit || 0;
         const page = options.page || 1;
         const paged = limit > 0

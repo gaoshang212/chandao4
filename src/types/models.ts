@@ -1,5 +1,19 @@
 // 业务模型类型定义
 
+// 附件 / 图片
+export interface Attachment {
+  id: number;
+  title: string;         // 文件名（含扩展名）
+  extension: string;     // 扩展名（不含点）
+  size: number;          // 字节
+  addedBy?: string;
+  addedDate?: string;
+  /** 是否图片类型，便于客户端区分展示 */
+  isImage: boolean;
+  /** 下载地址（绝对 URL） */
+  downloadUrl: string;
+}
+
 // Bug 模型
 export interface Bug {
   id: number;
@@ -17,6 +31,8 @@ export interface Bug {
   deadline?: string;
   openedDate: string;
   resolvedDate?: string;
+  /** 附件列表（图片与文档），仅 bug 详情接口返回 */
+  files?: Attachment[];
   /** HTML 页面提取的所有详情字段 */
   detailFields?: Record<string, string>;
 }
@@ -39,6 +55,8 @@ export interface Task {
   openedDate: string;
   /** 描述 */
   desc?: string;
+  /** 附件列表（图片与文档），仅 task 详情接口返回 */
+  files?: Attachment[];
   /** HTML 页面提取的所有详情字段 */
   detailFields?: Record<string, string>;
 }

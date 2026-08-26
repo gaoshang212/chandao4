@@ -2,8 +2,9 @@
 
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { Bug, Task, BUG_STATUS_MAP, BUG_SEVERITY_MAP, BUG_PRIORITY_MAP, TASK_STATUS_MAP, Product, Execution } from '../types/models';
+import { Bug, Task, BUG_STATUS_MAP, BUG_SEVERITY_MAP, BUG_PRIORITY_MAP, TASK_STATUS_MAP, Product, Execution, Attachment } from '../types/models';
 import { Project } from '../services/project.service';
+import { formatFileSize } from './attachment';
 
 /**
  * 格式化 Bug 列表为表格
@@ -44,6 +45,11 @@ export function formatBugDetail(bug: Bug): string {
       const display = label === '重现步骤' ? value.substring(0, 200) + (value.length > 200 ? '...' : '') : value;
       lines.push(`${chalk.gray(label.padEnd(maxLen + 1))} ${display}`);
     }
+  }
+
+  if (bug.files && bug.files.length > 0) {
+    lines.push('');
+    lines.push(formatAttachmentsBlock(bug.files));
   }
 
   return lines.join('\n');
@@ -90,6 +96,25 @@ export function formatTaskDetail(task: Task): string {
     }
   }
 
+  if (task.files && task.files.length > 0) {
+    lines.push('');
+    lines.push(formatAttachmentsBlock(task.files));
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * 格式化附件块：标题 + 每行一个文件，附带下载地址
+ */
+export function formatAttachmentsBlock(files: Attachment[]): string {
+  const lines = [chalk.bold(`附件 (${files.length})`)];
+  for (const f of files) {
+    const tag = f.isImage ? chalk.magenta('[图]') : chalk.cyan('[件]');
+    const meta = chalk.gray(`(${formatFileSize(f.size)}${f.addedBy ? `, ${f.addedBy}` : ''}${f.addedDate ? `, ${f.addedDate}` : ''})`);
+    lines.push(`  ${tag} ${f.title} ${meta}`);
+    lines.push(`       ${chalk.blue(f.downloadUrl)}`);
+  }
   return lines.join('\n');
 }
 
