@@ -14,6 +14,24 @@ export interface Attachment {
   downloadUrl: string;
 }
 
+export interface ActionHistory {
+  field: string;
+  old: string;
+  new: string;
+  diff: string;
+}
+
+export interface ActionRecord {
+  id: number;
+  actor: string;
+  action: string;
+  date: string;
+  comment: string;
+  extra: string;
+  history: ActionHistory[];
+  files?: Attachment[];
+}
+
 // Bug 模型
 export interface Bug {
   id: number;
@@ -34,6 +52,8 @@ export interface Bug {
   resolvedDate?: string;
   /** 附件列表（图片与文档），仅 bug 详情接口返回 */
   files?: Attachment[];
+  /** 操作历史，仅详情返回；备注保留原始 HTML */
+  actions?: ActionRecord[];
   /** HTML 页面提取的所有详情字段 */
   detailFields?: Record<string, string>;
 }
@@ -59,6 +79,8 @@ export interface Task {
   desc?: string;
   /** 附件列表（图片与文档），仅 task 详情接口返回 */
   files?: Attachment[];
+  /** 操作历史，仅详情返回；备注保留原始 HTML */
+  actions?: ActionRecord[];
   /** HTML 页面提取的所有详情字段 */
   detailFields?: Record<string, string>;
 }

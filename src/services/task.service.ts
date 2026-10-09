@@ -3,6 +3,7 @@
 import { ApiClient } from '../core/api-client';
 import { Task } from '../types/models';
 import { parseAttachments, extractInlineAttachments, mergeAttachments } from '../utils/attachment';
+import { parseActions } from '../utils/actions';
 
 export class TaskService {
   private client: ApiClient;
@@ -57,6 +58,7 @@ export class TaskService {
     if (!data.task) return null;
     const task = this.mapTask(data.task);
     const baseUrl = this.client.getBaseUrl();
+    task.actions = parseActions(data.actions, baseUrl);
     const primary = parseAttachments(data.files ?? data.task.files, baseUrl);
     const inline = extractInlineAttachments(String(data.task.desc || ''), baseUrl);
     const files = mergeAttachments(primary, inline);

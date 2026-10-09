@@ -100,7 +100,7 @@ chandao4 bug list --product 2001 --status active --limit 10
 chandao4 bug list --project 1001
 chandao4 bug list --project 1001 --limit 10 --page 1
 
-# 查看 Bug 详情（含附件/图片下载地址）
+# 查看 Bug 详情（含附件、历史记录、备注和字段变更）
 chandao4 bug show 4001
 
 # 创建 Bug
@@ -126,7 +126,7 @@ chandao4 task my --limit 10 --page 1
 chandao4 task list -p 1001
 chandao4 task list -p 1001 --status doing --limit 10
 
-# 查看任务详情（含附件/图片下载地址）
+# 查看任务详情（含附件、历史记录、备注和字段变更）
 chandao4 task show 3001
 
 # 创建任务
@@ -149,6 +149,17 @@ chandao4 product list
 chandao4 product list --limit 10 --page 2
 ```
 
+### 图片与文件地址
+
+根据已配置的 `server.url` 转换路径，无需登录或访问网络：
+
+```bash
+chandao4 get-url "/file-read-28904.png"
+chandao4 get-url "file-download-28904.html" --json
+```
+
+普通输出为完整 URL，JSON 输出为 `{ "url": "https://example.com/file-download-28904.html" }`。路径以 `/` 开头时相对站点根目录，否则相对禅道部署目录；完整 HTTP/HTTPS 地址直接解析。保留查询参数，含 `&` 或空格的路径请加引号。生成地址不代表文件无需登录即可访问。
+
 ### JSON 输出
 
 所有命令支持 `--json` 选项用于脚本集成：
@@ -161,7 +172,13 @@ chandao4 bug my --json
 # 仅取附件下载地址（图片或文件）
 chandao4 bug show 4001 --json | jq '.files[] | {title, isImage, downloadUrl}'
 chandao4 task show 3001 --json | jq '.files[].downloadUrl'
+
+# 获取操作历史与备注
+chandao4 bug show 4001 --json | jq '.actions'
+chandao4 task show 3001 --json | jq '.actions'
 ```
+
+详情的 `actions` 按时间升序返回，包含 `id`、`actor`、`action`、`date`、`comment`、`extra` 和 `history`。`comment` 保留原始 HTML；`history` 包含字段名 `field`、旧值 `old`、新值 `new` 和差异 `diff`。备注中的附件地址位于各记录的 `files`。无记录时返回空数组，列表查询不包含历史。
 
 ### 配置管理
 

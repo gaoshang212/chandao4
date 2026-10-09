@@ -39,6 +39,14 @@ chandao4 product list [--limit <n>] [--page <n>]
 
 `project list` 和 `product list` 的分页在客户端完成。
 
+## 图片与文件地址
+
+```text
+chandao4 get-url <path> [--json]
+```
+
+根据 `server.url` 将相对路径转为完整地址，无需登录或请求网络。`/` 开头按站点根目录解析，其他相对路径按禅道部署目录解析；也支持完整 HTTP/HTTPS 地址。普通输出为 URL，JSON 输出为 `{ "url": "..." }`。地址不会附带认证信息。
+
 ## Bug 查询
 
 ```text
@@ -48,6 +56,8 @@ chandao4 bug show <id>
 ```
 
 Bug 状态为 `active`、`resolved`、`closed`。
+
+`bug show` 展示操作历史、备注和字段变更；JSON 的 `actions` 保留备注 HTML，备注附件在 `actions[].files`。
 
 ## Bug 写入与流转
 
@@ -77,6 +87,8 @@ chandao4 task show <id>
 ```
 
 任务状态为 `wait`、`doing`、`done`、`pause`、`cancel`、`closed`。
+
+`task show` 同样返回 `actions` 操作历史，结构与 Bug 一致。
 
 ## 任务写入与流转
 

@@ -20,10 +20,11 @@ import { createProjectCommand } from './commands/project';
 import { createConfigCommand } from './commands/config';
 import { createLoginCommand, createLogoutCommand } from './commands/login';
 import { createInstallCommand } from './commands/install';
+import { createGetUrlCommand } from './commands/get-url';
 import { formatProductTable, formatProjectTable } from './utils/format';
 
 // 加载 .env 文件
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // 懒初始化服务（只在需要网络请求时才校验配置）
 let _services: ReturnType<typeof createServices> | null = null;
@@ -56,7 +57,7 @@ const program = new Command();
 program
   .name('chandao4')
   .description('禅道命令行工具 - Bug、任务、项目和产品管理')
-  .version('0.1.0')
+  .version(require('../package.json').version)
   .option('--json', '以 JSON 格式输出')
   .option('--debug', '打印详细的请求和响应信息');
 
@@ -122,6 +123,7 @@ program.addCommand(createLoginCommand());
 program.addCommand(createLogoutCommand());
 program.addCommand(createConfigCommand());
 program.addCommand(createInstallCommand());
+program.addCommand(createGetUrlCommand(getUseJson));
 // 需要网络访问的命令通过 getter 懒加载
 program.addCommand(createProjectCommand(
   new Proxy({} as ProjectService, { get(_, p) { return (getServices().projectService as any)[p]; } }),

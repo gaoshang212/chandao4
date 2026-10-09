@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-10-09
+
+### Added
+
+- `bug show` 和 `task show` 支持操作历史、备注、字段变更及备注附件，JSON 输出新增 `actions`。
+- 新增 `get-url <path>`，将图片或文件路径转换为完整 URL，支持 `--json` 输出。
+
+### Fixed
+
+- 默认关闭环境变量加载提示，避免干扰 JSON 输出。
+- CLI 版本号从包元数据读取，确保 `--version` 与发布版本一致。
+
 ## [0.2.2] - 2026-08-26
 
 ### Added
@@ -43,7 +55,8 @@
 - 支持禅道企业版 4.1.3+，通过 Session Cookie 认证，无需管理员后台权限
 - GitHub Actions 自动发布到 npm（基于 Trusted Publishing / OIDC）
 
-[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/gaoshang212/chandao4/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/gaoshang212/chandao4/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/gaoshang212/chandao4/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/gaoshang212/chandao4/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/gaoshang212/chandao4/compare/v0.1.0...v0.2.0

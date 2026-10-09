@@ -4,6 +4,33 @@ import { Attachment } from '../types/models';
 
 const IMAGE_EXT = new Set(['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg']);
 
+export function resolveFileUrl(filePath: string, baseUrl: string): string {
+  const value = filePath.trim();
+  if (!value) throw new Error('图片或文件路径不能为空');
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    let base: URL;
+    try {
+      base = new URL(baseUrl);
+    } catch {
+      throw new Error('请先配置有效的 server.url，再解析相对路径');
+    }
+    base.pathname = base.pathname.replace(/\/$/, '') + '/';
+    base.search = '';
+    base.hash = '';
+    try {
+      url = new URL(value, base);
+    } catch {
+      throw new Error('图片或文件路径无效');
+    }
+  }
+  if (!['http:', 'https:'].includes(url.protocol)) throw new Error('文件地址仅支持 HTTP 或 HTTPS');
+  if (url.username || url.password) throw new Error('文件地址不能包含用户名或密码');
+  return url.href;
+}
+
 /**
  * 根据扩展名生成访问 URL：图片走 file-read 直链（浏览器/markdown 可直显），
  * 其他类型走 file-download.html。

@@ -3,6 +3,7 @@
 import { ApiClient } from '../core/api-client';
 import { Bug } from '../types/models';
 import { parseAttachments, extractInlineAttachments, mergeAttachments } from '../utils/attachment';
+import { parseActions } from '../utils/actions';
 
 export class BugService {
   private client: ApiClient;
@@ -113,6 +114,7 @@ export class BugService {
     if (!data.bug) return null;
     const bug = this.mapBug(data.bug);
     const baseUrl = this.client.getBaseUrl();
+    bug.actions = parseActions(data.actions, baseUrl);
     const primary = parseAttachments(data.files ?? data.bug.files, baseUrl);
     const inline = extractInlineAttachments(String(data.bug.steps || ''), baseUrl);
     const files = mergeAttachments(primary, inline);

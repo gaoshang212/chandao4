@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { Bug, Task, BUG_STATUS_MAP, BUG_SEVERITY_MAP, BUG_PRIORITY_MAP, TASK_STATUS_MAP, Product, Execution, Attachment } from '../types/models';
+import { Bug, Task, BUG_STATUS_MAP, BUG_SEVERITY_MAP, BUG_PRIORITY_MAP, TASK_STATUS_MAP, Product, Execution, Attachment, ActionRecord } from '../types/models';
 import { Project } from '../services/project.service';
 import { formatFileSize } from './attachment';
 
@@ -51,6 +51,8 @@ export function formatBugDetail(bug: Bug): string {
     lines.push('');
     lines.push(formatAttachmentsBlock(bug.files));
   }
+
+  if (bug.actions?.length) lines.push('', formatActions(bug.actions));
 
   return lines.join('\n');
 }
@@ -101,6 +103,8 @@ export function formatTaskDetail(task: Task): string {
     lines.push(formatAttachmentsBlock(task.files));
   }
 
+  if (task.actions?.length) lines.push('', formatActions(task.actions));
+
   return lines.join('\n');
 }
 
@@ -116,6 +120,34 @@ export function formatAttachmentsBlock(files: Attachment[]): string {
     lines.push(`       ${chalk.blue(f.downloadUrl)}`);
   }
   return lines.join('\n');
+}
+
+function formatActions(actions: ActionRecord[]): string {
+  const labels: Record<string, string> = {
+    opened: '创建', edited: '编辑', commented: '备注', assigned: '指派',
+    resolved: '解决', closed: '关闭', activated: '激活', confirmed: '确认',
+    started: '开始', finished: '完成', paused: '暂停', restarted: '继续',
+    canceled: '取消', deleted: '删除',
+  };
+  const lines = [chalk.bold(`历史记录 (${actions.length})`)];
+  for (const action of actions) {
+    lines.push(`  ${action.date} ${action.actor} ${labels[action.action] || action.action}${action.extra ? ` (${action.extra})` : ''}`);
+    if (action.comment) lines.push(`    备注: ${historyText(action.comment)}`);
+    for (const change of action.history) {
+      lines.push(`    ${change.field}: ${historyText(change.old) || '(空)'} → ${historyText(change.new) || '(空)'}`);
+      if (change.diff) lines.push(`      差异: ${historyText(change.diff)}`);
+    }
+    if (action.files?.length) lines.push(formatAttachmentsBlock(action.files));
+  }
+  return lines.join('\n');
+}
+
+function historyText(value: string): string {
+  const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+  return value.replace(/<br\s*\/?\s*>|<\/(?:p|div|li)>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&(amp|lt|gt|quot|apos|nbsp);/g, (_, name: string) => entities[name])
+    .trim();
 }
 
 /**
